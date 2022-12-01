@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Arithmometer</title>
+		<meta charset="utf-8"/>
+		<meta name="keywords" content="arithmometre, arithmom&egrave;tre, thomas de colmar, simulation, animation 3D, racine carr&eacute;e, 
+		extraction de racine carr&eacute;e' square root, square root extraction, cylindre de leibniz, stepped drum, step reckoner">
+		<meta name="description" content="Try a nineteenth-century arithmometer to do your calculations. Realistic simulation in 3D">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+		<link rel="stylesheet" type="text/css" href="style.css"/>
+		<link rel="icon" type="jpg/png" href="images/favicon.png" />
+		<link rel="alternate" hreflang="fr" href="index.html" />
+	</head>
+	<body>
+		<style>
+			button:hover:enabled { background-color: DarkGrey; color : White}
+			span:active { background-color: White }
+		</style>
+		
+		<a href="http://www.aconit.org/" target="_blank"><img id="logoAconit" src="images/logoAconit.png" /></a>
+		<span id="titreExemples"></span>	
+		<span id="textExemples"></span>	
+		<a href="http://www.univ-grenoble-alpes.fr" target="_blank"><img id="logoUGA" src="images/logo-uga.png" width="5%" height="6%"/></a>
+		<div id="presentation"> L3 Maths-Info IMAG 2015-2016</div>
+		
+		<progress id="progression" value="0" max="100"><span>0</span>%</progress>
+		<span id="Patienter">&nbsp;Please be patient while the arithmometer is loading</span>
+		
+		<div>
+		<span   id="decalage">Décaler le chariot</span>
+		<button id="remiseZero" onclick="appelRAZaccu()">Clear the accumulator</button>
+		<button id="bDecPlus" onclick="verifDecPlus(1)">></button>
+		<button id="bDecMoins" onclick="verifDecMoins(1)" disabled><</button>
+		<button id="remiseZeroCompteur" onclick="appelRAZcompteur()">Clear the counters</button>
+		<button id="razCurseur" onclick="razCurseur()">Clear the sliders</button>
+		</div>
+		<div id="choixLang"> <img src="images/fr-us-uk-flag.png" id="choixLangIcon" style="visibility:hidden" onmouseover="bigImg(this)" onmouseout="smallImg(this)" onclick="toggleLangue()"/> </div>	
+	
+		<div>
+		<span   id="textCalculette">Calculate an expression</span>
+		<button id="Calculette" onclick="popupCalculette()">Calculator</button>
+		<button id="Extraction" onclick="popupExtraction()">Square root</button>		
+		<button id="Onthefly"   onclick="popupOnthefly()">On the fly</button>		
+		</div>
+
+		<span id="choixDess">Top
+		<input type="radio" name="ChooseTop" onclick="choixMaterial(1)" checked/>wood
+		<input type="radio" name="ChooseTop" onclick="choixMaterial(2)"/>brass
+		<input type="radio" name="ChooseTop" onclick="choixMaterial(3)"/>silver
+		</span>
+		
+		<span id="vitesse">Speed&nbsp;
+		<input type="radio" id="normale" name="velocite" checked/>normale
+		<input type="radio" id="lente"   name="velocite"/>slow
+		</span>
+		
+		<div id="TousLesBoutons">
+			<span id="vue">View :</span>			
+			<div id="Face" onclick="vueFace()" >				
+				<img alt="vue de façe" src="images/cubeFace.png" onmouseover="bigImg(this)" onmouseout="smallImg(this)" id="FaceIcon"/>				
+			</div>	
+			<div id="Dessus" onclick="vueDessus()" >				
+				<img alt="vue de dessus" src="images/cubeDessus.png" onmouseover="bigImg(this)" onmouseout="smallImg(this)" id="DessusIcon"/>				
+			</div>
+			
+			<div id="Droite" onclick="vueDroite()" >			
+				<img alt="vue de droite" src="images/cubeDroite.png" onmouseover="bigImg(this)" onmouseout="smallImg(this)" id="DroiteIcon"/>			
+			</div>
+
+			<div id="Gauche" onclick="vueGauche()" >				
+				<img alt="vue de gauche" src="images/cubeGauche.png" onmouseover="bigImg(this)" onmouseout="smallImg(this)" id="GaucheIcon"/>				
+			</div>
+
+			<div id="Dessous" onclick="vueDessous()" >				
+				<img alt="vue de dessous" src="images/cubeDessous.png" onmouseover="bigImg(this)" onmouseout="smallImg(this)" id="DessousIcon"/>				
+			</div>	
+			
+		</div>
+		<button id="enlvBoite" onclick="enleverBoite()">Remove the case</button>
+		<button id="enlvChariot" onclick="degagerChariot()">Open the carriage</button>
+		<button id="Assembler" onclick="assemblerAri()">Assemblage</button><br>
+		
+		<div id="curseur">Sliders position :<br><span id="curseurNum">&nbsp;0 0 0 0 0 0&nbsp;</span></div>
+
+		<script> var language = 1 </script>
+		<script src="three.js-ma/three.min.js"></script>
+		<script src="three.js-ma/TrackballControls.js"></script>
+		<script src="three.js-ma/Animation.js"></script>
+		<script src="three.js-ma/AnimationHandler.js"></script>
+		<script src="three.js-ma/KeyFrameAnimation.js"></script>
+		<script src="three.js-ma/ColladaLoader.js"></script>
+		<script src="three.js-ma/Detector.js"></script>
+		<script src="three.js-ma/stats.min.js"></script>
+		<script src="three.js-ma/Projector.js"></script>
+		<script src="three.js-ma/CombinedCamera.js"></script>
+		<script src="three.js-ma/OrbitControls.js"></script>
+		<script src="Cylindre.js"></script>
+		<script src="arithmometre.js"></script>
+		<script src="Fonctions.js"></script>
+		<script src="auxiliaire.js"></script>
+		<script src="notice.js"></script>
+		
+		<div id="bTourner" onclick="initialise()" >
+			<img alt="cercle fleche" src="images/fleche.png" onmouseover="bigImg(this)" onmouseout="smallImg(this)"/>
+			<span id="Tourner"><p>&nbsp;Click to turn the crank</p><span>
+		</div>
+
+		<button id="help" onclick="help()">&nbsp;Help&nbsp;</button>
+		
+		<div id="exemples"><span id="executer">&nbsp;Examples<br><font size="2">run in a loop</font></span> <input type="checkbox" id="boucle"/>
+			<div id="bAddition" onclick="exempleAddition(1)" >
+				<img id="imbAddition" style="visibility:hidden" alt="dessin +" src="images/Plus.png" onmouseover="bigImg(imbAddition)" onmouseout="smallImg(imbAddition)"/>
+			</div>
+			<div id="bSoustraction" onclick="exempleSoustraction(1)" >
+				<img id="imbSoustraction" style="visibility:hidden" alt="dessin -" src="images/Moins.png" onmouseover="bigImg(imbSoustraction)" onmouseout="smallImg(imbSoustraction)"/>
+			</div>
+			<div id="bMultiplication" onclick="exempleMultiplication(1)" >
+				<img id="imbMultiplication" style="visibility:hidden" alt="dessin x" src="images/Fois.png" onmouseover="bigImg(imbMultiplication)" onmouseout="smallImg(imbMultiplication)"/>
+			</div>
+			<div id="bDivision" onclick="exempleDivision(1)" >
+				<img id="imbDivision" style="visibility:hidden" alt="dessin /" src="images/Diviser.png" onmouseover="bigImg(imbDivision)" onmouseout="smallImg(imbDivision)"/>
+			</div>
+		</div>
+	</body>
+</html>
