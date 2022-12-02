@@ -4,7 +4,7 @@ var container, stats;
 var camera, scene, renderer;
 var pickingData = [], pickingTexture, pickingScene;
 var particleLight;
-var objects = [], cadran = [], cylindre = [], sysRetenue = [], curseur = [], engrCompt = [], axeEngr = [], cursRetenu = [], axeManivelle, axePinc, parquet, dae;
+var cadran = [], cylindre = [], sysRetenue = [], curseur = [], engrCompt = [], axeEngr = [], cursRetenu = [], axeManivelle, axePinc, parquet, dae;
 var sysRetourRetenue = [], camAntiDepas = [], boiteChariot, barreAddSub, boiteAvant, boiteArriere, axeActionCompteur = [], boiteDessus, curseurActionCompteur, plaque = [];
 var compteur = [],engrAccu =[], accumulateur = [], pignonRAZAccu, pignonRAZCompteur, peigneAccu, peigneCompteur, scaleDefault; 
 var TargetPos = [] ,  ValCurProg ;
@@ -99,84 +99,98 @@ function init() {
 	pickingTexture.minFilter = THREE.LinearFilter;
 	pickingTexture.generateMipmaps = false;
 
+  var objects = [];
+
 	// Ajout des objets
-	var longueurDAE = dae.children.length  // 87 objects
+	var longueurDAE = dae.children.length
 	for(var i = 0 ; i < longueurDAE ; i++){ objects.push(dae.children[i]); }
 	for(var i = 0 ; i < longueurDAE ; i++){ scene.add(objects[i]); }
 
 //																				console.log(objects);
 
+	function findObjectByName(name)
+	{
+		for(var i = 0 ; i < longueurDAE ; i++)
+		{
+			if(objects[i].name == name)
+				return objects[i];
+		}
+    console.log("WARNING: can't find object '" + name + "'");
+		return null;
+	}
+
 	// 
-	axePrinc = objects[29];
-	barreAddSub = objects[41]; // 100° (add) à -90° (sous)
-	boiteArriere = objects[42];
-	boiteAvant = objects[43]; 
-	boiteCentre = objects[44];
-	boiteDessous = objects[45];
-	boiteDessus = objects[40];
-	boiteDroite = objects[46];
-	boiteGauche = objects[47];
-	boiteChariot = objects[39];
-	axeActionCompteur[0] = objects[12];
-	axeActionCompteur[1] = objects[13];
+	axePrinc = findObjectByName("Axe_Engrenage_Principal");
+	barreAddSub = findObjectByName("Barre_Add_Sub"); // 100° (add) à -90° (sous)
+	boiteArriere = findObjectByName("Boite_Arriere");
+	boiteAvant = findObjectByName("Boite_Avant");
+	boiteCentre = findObjectByName("Boite_Centre");
+	boiteDessous = findObjectByName("Boite_Dessous");
+  boiteDessus = findObjectByName("Axe_Plateau_1"); // objects[40];
+	boiteDroite = findObjectByName("Boite_Droite");
+	boiteGauche = findObjectByName("Boite_Gauche");
+	boiteChariot = findObjectByName("Axe_Plateau"); // objects[39];
+	axeActionCompteur[0] = findObjectByName("Axe_Action_Compteur_1");
+	axeActionCompteur[1] = findObjectByName("Axe_Action_Compteur_2");
 
 	scene.remove(boiteChariot.children[1]);
 	scene.remove(boiteDessus.children[1]);
-	accumulateur[0] = objects[0];
-	accumulateur[1] = objects[4];
-	accumulateur[2] = objects[5];
-	accumulateur[3] = objects[6];
-	accumulateur[4] = objects[7];
-	accumulateur[5] = objects[8];
-	accumulateur[6] = objects[9];
-	accumulateur[7] = objects[10];
-	accumulateur[8] = objects[11];
-	accumulateur[9] = objects[1];
-	accumulateur[10] = objects[2];
-	accumulateur[11] = objects[3];
+	accumulateur[0] = findObjectByName("Axe_Accumulateur_1");
+	accumulateur[1] = findObjectByName("Axe_Accumulateur_2");
+	accumulateur[2] = findObjectByName("Axe_Accumulateur_3");
+	accumulateur[3] = findObjectByName("Axe_Accumulateur_4");
+	accumulateur[4] = findObjectByName("Axe_Accumulateur_5");
+	accumulateur[5] = findObjectByName("Axe_Accumulateur_6");
+	accumulateur[6] = findObjectByName("Axe_Accumulateur_7");
+	accumulateur[7] = findObjectByName("Axe_Accumulateur_8");
+	accumulateur[8] = findObjectByName("Axe_Accumulateur_9");
+	accumulateur[9] = findObjectByName("Axe_Accumulateur_10");
+	accumulateur[10] = findObjectByName("Axe_Accumulateur_11");
+	accumulateur[11] = findObjectByName("Axe_Accumulateur_12");
 
 	// console.log(accumulateur[0].position.z-accumulateur[1].position.z);
 	pasDecalage = (accumulateur[1].position.z - accumulateur[0].position.z) - 0.045;
 
-	for (var i=0; i<=5; i++)
+	for (var i=0; i<6; i++)
 	{
+    var ordinal = i + 1;
 		engrAccu[i] = accumulateur[i].children[2];
 		engrAccu[i+6] = accumulateur[i+6].children[2];
-		compteur[i] = objects[i+14];
-		cylindre[i] = objects[i+21];	
+		compteur[i] = findObjectByName("Axe_Compteur_" + ordinal);
+		cylindre[i] = findObjectByName("Axe_Cylindre_" + ordinal);
 		camAntiDepas[i] = cylindre[i].children[3];
-		axeEngr[i] = objects[i+30];
-		curseur[i] = objects[i+49];		
-		curseurRetenue[i] = objects[i+55];
-		doubleEngrenage[i] = objects[i+63];	
-		engrCompt[i] = objects[i+71];
-		sysRetenue[i] = objects[i+83];
-		sysRetourRetenue[i] = objects[i+90];
+		axeEngr[i] = findObjectByName("Axe_Engrenages_" + ordinal);
+		curseur[i] = findObjectByName("Curseur_" + ordinal);		
+		curseurRetenue[i] = i == 0 ? findObjectByName("Curseur_Action_Compteur") : findObjectByName("Curseur_Retenue_" + i);
+		doubleEngrenage[i] = findObjectByName("Double_Engrenage_" + ordinal);	
+		engrCompt[i] = findObjectByName("Engrenage_Compteur_" + ordinal);
+		sysRetenue[i] = findObjectByName("Systeme_Retenue_" + ordinal);
+		sysRetourRetenue[i] = findObjectByName("Systeme_Retour_Retenue_" + ordinal);
 	}
 	engrAccu[11] = accumulateur[11].children[2];
 
-	
-	compteur[6] = objects[20];
-	cylindre[6] = objects[27];
-	cylindre[7] = objects[28];
+	compteur[6] = findObjectByName("Axe_Compteur_7");
+	cylindre[6] = findObjectByName("Axe_Cylindre_7");
+	cylindre[7] = findObjectByName("Axe_Cylindre_8");
+	axeEngr[6] = findObjectByName("Axe_Engrenages_7");
+	axeEngr[7] = findObjectByName("Axe_Engrenages_8");
+	curseurRetenue[6] = findObjectByName("Curseur_Retenue_6");
+	curseurRetenue[7] = findObjectByName("Curseur_Retenue_7");
+	doubleEngrenage[6] = findObjectByName("Double_Engrenage_7");
+	doubleEngrenage[7] = findObjectByName("Double_Engrenage_8");
+	sysRetenue[6] = findObjectByName("Systeme_Retenue_7");
+
+	axeManivelle = findObjectByName("Axe_Manivelle");
+	peigneAccu = findObjectByName("Peigne_Accumulateurs");
+	peigneCompteur = findObjectByName("Peigne_Compteurs");
+	pignonRAZAccu = findObjectByName("Pignon_Remise_Zero_Accumulateurs");
+	pignonRAZCompteur = findObjectByName("Pignon_Remise_Zero_Compteurs");
+
 	camAntiDepas[6] = cylindre[6].children[2];
 	camAntiDepas[7] = cylindre[7].children[2];
-	axeEngr[6] = objects[36];
-	axeEngr[7] = objects[37];
-	axeManivelle = objects[38];
-	curseurRetenue[6] = objects[61];
-	curseurRetenue[7] = objects[62];
-	doubleEngrenage[6] = objects[69];
-	doubleEngrenage[7] = objects[70];
-	peigneAccu = objects[78];
-	peigneCompteur = objects[79];
-	pignonRAZAccu = objects[80];
-	pignonRAZCompteur = objects[81];
-	sysRetenue[6] = objects[89];
 
-
-	sysRetourRetenue[6] = objects[96];
-	plaque[0] = objects[82];
+	sysRetourRetenue[6] = findObjectByName("Systeme_Retour_Retenue_7");
+	plaque[0] = findObjectByName("Plaque_1");
 	plaque[1] = plaque[0].children[1];
 	
 	groupChariot = new THREE.Group();
@@ -227,7 +241,7 @@ function init() {
 	positionIntialcurseurRetenue = curseurRetenue[1].position.x ; 
 	
 
-	lamp = objects[77];
+	lamp = findObjectByName("Lampe_1");
 	// Objet 77 est déjà engrCompt[6]
 	// scaleDefault = cadran[0].scale;
 
